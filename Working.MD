@@ -9,10 +9,10 @@
 - requirements.txt
 - pip install -r requirements.txt
 
-## main.ipynb to chcek all libraries imported and working succesfully or not?
-if any file doesn't isnatlled even after installing
-- install them individually
-like in my case there were these two: `pip install opencv-python` , `pip install torch`
+## main.ipynb to check all libraries imported and working succesfully or not?
+if any file doesn't installed even after installing so
+- install them individually like in my case there were these two: 
+`pip install opencv-python` , `pip install torch`
 
 ## Kaggle ki api use karke dataset import 
 - pip install kaggle 
