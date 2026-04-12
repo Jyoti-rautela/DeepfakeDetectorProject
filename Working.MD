@@ -31,7 +31,7 @@ OR
 - git remote add origin <repo-url>
 - git push -u origin main
 
-or
+OR
 
 - git remote add origin <repository-url>
 - git push -u origin main
