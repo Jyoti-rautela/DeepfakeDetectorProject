@@ -22,9 +22,11 @@ if any file doesn't installed even after installing so
 like venv/ , data/ , other ..
 
 ## Now to puch is git use these codes in terminal
+- source control --> push to Github --> Can make branch from here and work in branch
+OR
 - git add .
 - git commit -m "Your commit message"
-- git remote add origin <repo-url> --> https://github.com/Jyoti-rautela/deepfake_detector/tree/major-project
+- git remote add origin <repo-url>
 - git push -u origin main
 or
 - git remote add origin <repository-url>
