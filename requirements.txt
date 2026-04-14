@@ -1,15 +1,47 @@
+# Core Deep Learning
 torch
 torchvision
+
+# Data handling
 numpy
 pandas
+
+# Image & Video processing
 opencv-python
 Pillow
+
+# Visualization (optional but good)
 matplotlib
 seaborn
+
+# ML utilities
 scikit-learn
+
+# Backend (API)
 fastapi
 uvicorn
 python-multipart
+
+# Frontend (UI)
 streamlit
+
+# HTTP communication (VERY IMPORTANT for Streamlit ↔ FastAPI)
+requests
+
+# Face Detection (YOU MISSED THIS 🔥)
+facenet-pytorch
+
+# Model Explainability (optional)
 grad-cam
+
+# Dataset (optional)
 kaggle
+
+# Progress bars (useful)
+tqdm
+
+# File handling & utilities
+python-dotenv
+
+# Optional (better performance logging/debugging)
+loguru
