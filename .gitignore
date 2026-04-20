@@ -1,6 +1,7 @@
-venv/
+.venv311/
 data/
 __pycache__/
 *.zip
 *.csv
 project/*.pdf
+.ipynb_checkpoints/
