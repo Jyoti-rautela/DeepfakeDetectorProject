@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { ThemeProvider } from './context/ThemeContext'
 import Navbar from './components/common/Navbar'
 import Home from './pages/Home'
 import HowItWorks from './pages/HowItWorks'
@@ -7,17 +8,17 @@ import Sandbox from './pages/Sandbox'
 
 function App() {
   return (
-    <Router>
-      <div className="min-h-screen" style={{ backgroundColor: '#0a0a0f' }}>
+    <ThemeProvider>
+      <Router>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/"             element={<Home />}       />
           <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route path="/trust" element={<TrustQuiz />} />
-          <Route path="/sandbox" element={<Sandbox />} />
+          <Route path="/trust"        element={<TrustQuiz />}  />
+          <Route path="/sandbox"      element={<Sandbox />}    />
         </Routes>
-      </div>
-    </Router>
+      </Router>
+    </ThemeProvider>
   )
 }
 

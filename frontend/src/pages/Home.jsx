@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
 import { Shield, Zap, Eye, Brain, ChevronRight, Activity } from 'lucide-react'
 import StatusBadge from '../components/common/StatusBadge'
+import { useTheme } from '../context/ThemeContext'
+import Spinner3D from '../components/home/Spinner3D'
+import { useReveal } from '../hooks/useReveal'
 
 const stats = [
   { label: 'Test Accuracy', value: '91.61%', sub: 'on 20,000 images'       },
@@ -45,13 +48,14 @@ const features = [
 ]
 
 export default function Home() {
+  const { colors } = useTheme()
+  useReveal()
+
   return (
     <div className="pt-16 w-full">
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-
-        {/* Background glow */}
+      <section className="min-h-screen flex items-center px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -59,102 +63,116 @@ export default function Home() {
           }}
         />
 
-        <div className="w-full max-w-4xl mx-auto text-center relative z-10 py-20">
+        <div className="w-full max-w-7xl mx-auto relative z-10 py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-          {/* Status badge */}
-          <div className="flex justify-center mb-6 sm:mb-8">
-            <StatusBadge />
+            {/* Left — text */}
+            <div className="text-center lg:text-left">
+              <div className="flex justify-center lg:justify-start mb-6 sm:mb-8">
+                <StatusBadge />
+              </div>
+
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4 sm:mb-6 leading-tight">
+                <span style={{ color: colors.text }}>Truth matters.</span>
+                <br />
+                <span
+                  style={{
+                    background: 'linear-gradient(135deg, #6366f1, #a78bfa)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  Verify reality.
+                </span>
+              </h1>
+
+              <p
+                className="text-base sm:text-lg max-w-xl mx-auto lg:mx-0 mb-8 sm:mb-10 leading-relaxed"
+                style={{ color: colors.textSub }}
+              >
+                OrVex uses a fine-tuned{' '}
+                <span style={{ color: '#a78bfa' }}>EfficientNet-B3</span> deep
+                learning model to detect AI-generated deepfake images and videos
+                with <span style={{ color: '#a78bfa' }}>97.98% accuracy</span>.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
+                <Link
+                  to="/sandbox"
+                  className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-semibold text-white transition-all duration-200 hover:scale-105 text-sm sm:text-base"
+                  style={{
+                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                    boxShadow: '0 0 30px rgba(99,102,241,0.3)',
+                  }}
+                >
+                  Start Detection →
+                </Link>
+                <Link
+                  to="/how-it-works"
+                  className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-semibold transition-all duration-200 hover:scale-105 text-sm sm:text-base"
+                  style={{
+                    backgroundColor: colors.surface,
+                    border: `1px solid ${colors.border}`,
+                    color: colors.textSub,
+                  }}
+                >
+                  How It Works
+                </Link>
+              </div>
+
+              <p
+                className="mt-10 text-xs tracking-widest uppercase"
+                style={{ color: colors.textFaint }}
+              >
+                scroll to explore
+              </p>
+            </div>
+
+            {/* Right — 3D Spinner */}
+            <div className="flex justify-center lg:justify-end">
+              <Spinner3D />
+            </div>
           </div>
-
-          {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-4 sm:mb-6 leading-tight">
-            <span className="text-white">Truth matters.</span>
-            <br />
-            <span
-              style={{
-                background: 'linear-gradient(135deg, #6366f1, #a78bfa)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
-              Verify reality.
-            </span>
-          </h1>
-
-          {/* Subheading */}
-          <p
-            className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed px-4"
-            style={{ color: '#94a3b8' }}
-          >
-            OrVex uses a fine-tuned{' '}
-            <span style={{ color: '#a78bfa' }}>EfficientNet-B3</span> deep
-            learning model to detect AI-generated deepfake images and videos
-            with <span style={{ color: '#a78bfa' }}>97.98% accuracy</span>.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-            <Link
-              to="/sandbox"
-              className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-semibold text-white transition-all duration-200 hover:scale-105 text-sm sm:text-base"
-              style={{
-                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
-                boxShadow: '0 0 30px rgba(99,102,241,0.3)',
-              }}
-            >
-              Start Detection →
-            </Link>
-            <Link
-              to="/how-it-works"
-              className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-semibold transition-all duration-200 hover:scale-105 text-sm sm:text-base"
-              style={{
-                backgroundColor: '#12121a',
-                border: '1px solid #1e1e2e',
-                color: '#94a3b8',
-              }}
-            >
-              How It Works
-            </Link>
-          </div>
-
-          {/* Scroll hint */}
-          <p className="mt-12 sm:mt-16 text-xs tracking-widest uppercase" style={{ color: '#334155' }}>
-            scroll to explore
-          </p>
         </div>
       </section>
 
       {/* ── Stats ────────────────────────────────────────────── */}
       <section
         className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8"
-        style={{ borderTop: '1px solid #1e1e2e' }}
+        style={{ borderTop: `1px solid ${colors.border}` }}
       >
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10 sm:mb-14">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+
+          {/* Heading */}
+          <div className="text-center mb-10 sm:mb-14 reveal">
+            <h2
+              className="text-2xl sm:text-3xl font-bold mb-3"
+              style={{ color: colors.text }}
+            >
               Model Performance
             </h2>
-            <p className="text-sm sm:text-base" style={{ color: '#64748b' }}>
+            <p className="text-sm sm:text-base" style={{ color: colors.textMuted }}>
               Evaluated on 20,000 unseen test images after training on 140k faces
             </p>
           </div>
 
+          {/* Stat cards */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             {stats.map((stat, i) => (
               <div
                 key={i}
-                className="rounded-xl p-4 sm:p-5 text-center transition-all duration-300 hover:-translate-y-1"
+                className={`reveal reveal-delay-${i + 1} rounded-xl p-4 sm:p-5 text-center transition-all duration-300 hover:-translate-y-1`}
                 style={{
-                  backgroundColor: '#12121a',
-                  border: '1px solid #1e1e2e',
+                  backgroundColor: colors.surface,
+                  border: `1px solid ${colors.border}`,
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = '#6366f1'
                   e.currentTarget.style.boxShadow = '0 0 20px rgba(99,102,241,0.1)'
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = '#1e1e2e'
+                  e.currentTarget.style.borderColor = colors.border
                   e.currentTarget.style.boxShadow = 'none'
                 }}
               >
@@ -169,10 +187,16 @@ export default function Home() {
                 >
                   {stat.value}
                 </div>
-                <div className="text-xs sm:text-sm font-semibold text-white mb-1">
+                <div
+                  className="text-xs sm:text-sm font-semibold mb-1"
+                  style={{ color: colors.text }}
+                >
                   {stat.label}
                 </div>
-                <div className="text-xs hidden sm:block" style={{ color: '#475569' }}>
+                <div
+                  className="text-xs hidden sm:block"
+                  style={{ color: colors.textFaint }}
+                >
                   {stat.sub}
                 </div>
               </div>
@@ -184,33 +208,39 @@ export default function Home() {
       {/* ── Features ─────────────────────────────────────────── */}
       <section
         className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8"
-        style={{ borderTop: '1px solid #1e1e2e' }}
+        style={{ borderTop: `1px solid ${colors.border}` }}
       >
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-10 sm:mb-14">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+
+          {/* Heading */}
+          <div className="text-center mb-10 sm:mb-14 reveal">
+            <h2
+              className="text-2xl sm:text-3xl font-bold mb-3"
+              style={{ color: colors.text }}
+            >
               What Makes OrVex Different
             </h2>
-            <p className="text-sm sm:text-base" style={{ color: '#64748b' }}>
+            <p className="text-sm sm:text-base" style={{ color: colors.textMuted }}>
               Built as a Final Year Project at Amrapali University, B.Tech CSE 2026
             </p>
           </div>
 
+          {/* Feature cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {features.map((f, i) => (
               <div
                 key={i}
-                className="rounded-xl p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 cursor-default"
+                className={`reveal reveal-delay-${i + 1} rounded-xl p-5 sm:p-6 transition-all duration-300 hover:-translate-y-1 cursor-default`}
                 style={{
-                  backgroundColor: '#12121a',
-                  border: '1px solid #1e1e2e',
+                  backgroundColor: colors.surface,
+                  border: `1px solid ${colors.border}`,
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = '#6366f1'
                   e.currentTarget.style.boxShadow = '0 0 25px rgba(99,102,241,0.08)'
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = '#1e1e2e'
+                  e.currentTarget.style.borderColor = colors.border
                   e.currentTarget.style.boxShadow = 'none'
                 }}
               >
@@ -223,10 +253,16 @@ export default function Home() {
                 >
                   {f.icon}
                 </div>
-                <h3 className="text-white font-semibold mb-2 text-sm sm:text-base">
+                <h3
+                  className="font-semibold mb-2 text-sm sm:text-base"
+                  style={{ color: colors.text }}
+                >
                   {f.title}
                 </h3>
-                <p className="text-xs sm:text-sm leading-relaxed" style={{ color: '#64748b' }}>
+                <p
+                  className="text-xs sm:text-sm leading-relaxed"
+                  style={{ color: colors.textMuted }}
+                >
                   {f.desc}
                 </p>
               </div>
@@ -238,21 +274,28 @@ export default function Home() {
       {/* ── CTA Banner ───────────────────────────────────────── */}
       <section
         className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8"
-        style={{ borderTop: '1px solid #1e1e2e' }}
+        style={{ borderTop: `1px solid ${colors.border}` }}
       >
         <div className="max-w-3xl mx-auto text-center">
           <div
-            className="rounded-2xl p-8 sm:p-12"
+            className="reveal rounded-2xl p-8 sm:p-12"
             style={{
               background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.1))',
               border: '1px solid rgba(99,102,241,0.3)',
             }}
           >
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+            <h2
+              className="text-2xl sm:text-3xl font-bold mb-4"
+              style={{ color: colors.text }}
+            >
               Ready to detect deepfakes?
             </h2>
-            <p className="text-sm sm:text-base mb-6 sm:mb-8 px-4" style={{ color: '#94a3b8' }}>
-              Upload any image or video and get an AI-powered verdict in seconds — with a visual explanation.
+            <p
+              className="text-sm sm:text-base mb-6 sm:mb-8 px-4"
+              style={{ color: colors.textSub }}
+            >
+              Upload any image or video and get an AI-powered verdict in seconds
+              — with a visual explanation.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Link
@@ -269,9 +312,9 @@ export default function Home() {
                 to="/trust"
                 className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl font-semibold transition-all duration-200 hover:scale-105 text-sm sm:text-base"
                 style={{
-                  backgroundColor: '#12121a',
-                  border: '1px solid #1e1e2e',
-                  color: '#94a3b8',
+                  backgroundColor: colors.surface,
+                  border: `1px solid ${colors.border}`,
+                  color: colors.textSub,
                 }}
               >
                 Take the Quiz
@@ -283,11 +326,12 @@ export default function Home() {
 
       {/* ── Footer ───────────────────────────────────────────── */}
       <footer
-        className="py-6 sm:py-8 px-4 sm:px-6 text-center text-xs sm:text-sm"
-        style={{ borderTop: '1px solid #1e1e2e', color: '#334155' }}
+        className="py-6 sm:py-8 px-4 text-center text-xs sm:text-sm reveal"
+        style={{ borderTop: `1px solid ${colors.border}`, color: colors.textFaint }}
       >
         OrVex — Final Year Project | B.Tech CSE 2026 | Amrapali University
       </footer>
+
     </div>
   )
 }

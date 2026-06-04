@@ -3,6 +3,8 @@ import {
   Upload, Cpu, Brain, Layers, BarChart2,
   CheckCircle, ArrowRight
 } from 'lucide-react'
+import { useTheme } from '../context/ThemeContext'
+import { useReveal } from '../hooks/useReveal'
 
 const steps = [
   {
@@ -11,8 +13,8 @@ const steps = [
     title: 'Upload Media',
     desc: 'Upload any image (JPEG, PNG, WebP) or video (MP4, MOV, AVI, WebM) through the Face Analysis Sandbox. Files are processed locally — nothing is stored permanently.',
     details: [
-      'Supports images up to 10MB',
-      'Supports videos up to 200MB',
+      'Supports images up to 50MB',
+      'Supports videos up to 50MB',
       'File is saved temporarily and deleted after analysis',
     ],
   },
@@ -74,28 +76,29 @@ const steps = [
 ]
 
 const modelInfo = [
-  { label: 'Architecture',    value: 'EfficientNet-B3'          },
-  { label: 'Input Size',      value: '300 × 300 × 3'            },
-  { label: 'Parameters',      value: '~12 Million'               },
-  { label: 'Training Data',   value: '140k Real & Fake Faces'    },
-  { label: 'Fine-tuned On',   value: 'FaceForensics++'           },
-  { label: 'Test Accuracy',   value: '91.61%'                    },
-  { label: 'Fine-tune Acc.',  value: '97.98%'                    },
-  { label: 'Loss Function',   value: 'CrossEntropyLoss'          },
-  { label: 'Optimizer',       value: 'Adam (lr=1e-3)'            },
-  { label: 'Epochs',          value: '10 + fine-tuning'          },
-  { label: 'Batch Size',      value: '32'                        },
-  { label: 'GPU',             value: 'Kaggle T4 (training)'      },
+  { label: 'Architecture',   value: 'EfficientNet-B3'       },
+  { label: 'Input Size',     value: '300 × 300 × 3'         },
+  { label: 'Parameters',     value: '~12 Million'            },
+  { label: 'Training Data',  value: '140k Real & Fake Faces' },
+  { label: 'Fine-tuned On',  value: 'FaceForensics++'        },
+  { label: 'Test Accuracy',  value: '91.61%'                 },
+  { label: 'Fine-tune Acc.', value: '97.98%'                 },
+  { label: 'Loss Function',  value: 'CrossEntropyLoss'       },
+  { label: 'Optimizer',      value: 'Adam (lr=1e-3)'         },
+  { label: 'Epochs',         value: '10 + fine-tuning'       },
+  { label: 'Batch Size',     value: '32'                     },
+  { label: 'GPU',            value: 'Kaggle T4 (training)'   },
 ]
 
 export default function HowItWorks() {
+  const { colors } = useTheme()
+  useReveal()
+
   return (
     <div className="pt-16 w-full">
 
       {/* ── Header ───────────────────────────────────────────── */}
-      <section
-        className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden"
-      >
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -113,10 +116,13 @@ export default function HowItWorks() {
           >
             DETECTION PIPELINE
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white mb-4">
+          <h1
+            className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4"
+            style={{ color: colors.text }}
+          >
             How OrVex Works
           </h1>
-          <p className="text-base sm:text-lg" style={{ color: '#94a3b8' }}>
+          <p className="text-base sm:text-lg" style={{ color: colors.textSub }}>
             A step-by-step breakdown of the AI pipeline — from file upload to final verdict.
           </p>
         </div>
@@ -125,24 +131,24 @@ export default function HowItWorks() {
       {/* ── Steps ────────────────────────────────────────────── */}
       <section
         className="py-16 px-4 sm:px-6 lg:px-8"
-        style={{ borderTop: '1px solid #1e1e2e' }}
+        style={{ borderTop: `1px solid ${colors.border}` }}
       >
         <div className="max-w-4xl mx-auto">
           <div className="flex flex-col gap-6">
             {steps.map((step, i) => (
               <div
                 key={i}
-                className="rounded-2xl p-6 sm:p-8 transition-all duration-300"
+                className={`reveal reveal-delay-${(i % 5) + 1} rounded-2xl p-6 sm:p-8 transition-all duration-300`}
                 style={{
-                  backgroundColor: '#12121a',
-                  border: '1px solid #1e1e2e',
+                  backgroundColor: colors.surface,
+                  border: `1px solid ${colors.border}`,
                 }}
                 onMouseEnter={e => {
                   e.currentTarget.style.borderColor = '#6366f1'
                   e.currentTarget.style.boxShadow = '0 0 30px rgba(99,102,241,0.08)'
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = '#1e1e2e'
+                  e.currentTarget.style.borderColor = colors.border
                   e.currentTarget.style.boxShadow = 'none'
                 }}
               >
@@ -169,12 +175,15 @@ export default function HowItWorks() {
 
                   {/* Content */}
                   <div className="flex-1">
-                    <h3 className="text-lg sm:text-xl font-bold text-white mb-2">
+                    <h3
+                      className="text-lg sm:text-xl font-bold mb-2"
+                      style={{ color: colors.text }}
+                    >
                       {step.title}
                     </h3>
                     <p
                       className="text-sm sm:text-base leading-relaxed mb-4"
-                      style={{ color: '#94a3b8' }}
+                      style={{ color: colors.textSub }}
                     >
                       {step.desc}
                     </p>
@@ -187,7 +196,7 @@ export default function HowItWorks() {
                           />
                           <span
                             className="text-xs sm:text-sm font-mono"
-                            style={{ color: '#64748b' }}
+                            style={{ color: colors.textMuted }}
                           >
                             {d}
                           </span>
@@ -197,11 +206,10 @@ export default function HowItWorks() {
                   </div>
                 </div>
 
-                {/* Arrow between steps */}
                 {i < steps.length - 1 && (
                   <div
                     className="flex justify-center mt-4 sm:hidden"
-                    style={{ color: '#1e1e2e' }}
+                    style={{ color: colors.border }}
                   >
                     <ArrowRight size={20} />
                   </div>
@@ -215,32 +223,45 @@ export default function HowItWorks() {
       {/* ── Model Specs ──────────────────────────────────────── */}
       <section
         className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8"
-        style={{ borderTop: '1px solid #1e1e2e' }}
+        style={{ borderTop: `1px solid ${colors.border}` }}
       >
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
+          <div className="text-center mb-10 reveal">
+            <h2
+              className="text-2xl sm:text-3xl font-bold mb-3"
+              style={{ color: colors.text }}
+            >
               Model Specifications
             </h2>
-            <p className="text-sm sm:text-base" style={{ color: '#64748b' }}>
+            <p className="text-sm sm:text-base" style={{ color: colors.textMuted }}>
               Technical details of the trained deepfake detection model
             </p>
           </div>
 
           <div
-            className="rounded-2xl overflow-hidden"
-            style={{ border: '1px solid #1e1e2e' }}
+            className="reveal rounded-2xl overflow-hidden"
+            style={{ border: `1px solid ${colors.border}` }}
           >
             {modelInfo.map((item, i) => (
               <div
                 key={i}
-                className="flex items-center justify-between px-5 sm:px-8 py-3 sm:py-4 text-sm"
+                className="flex items-center justify-between px-5 sm:px-8 py-3 sm:py-4 text-sm transition-all duration-200"
                 style={{
-                  backgroundColor: i % 2 === 0 ? '#12121a' : '#0d0d14',
-                  borderBottom: i < modelInfo.length - 1 ? '1px solid #1e1e2e' : 'none',
+                  backgroundColor: i % 2 === 0 ? colors.surface : colors.bg,
+                  borderBottom: i < modelInfo.length - 1
+                    ? `1px solid ${colors.border}`
+                    : 'none',
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.backgroundColor = 'rgba(99,102,241,0.05)'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.backgroundColor = i % 2 === 0
+                    ? colors.surface
+                    : colors.bg
                 }}
               >
-                <span style={{ color: '#64748b' }}>{item.label}</span>
+                <span style={{ color: colors.textMuted }}>{item.label}</span>
                 <span
                   className="font-mono font-medium text-right"
                   style={{ color: '#a78bfa' }}
@@ -256,13 +277,19 @@ export default function HowItWorks() {
       {/* ── CTA ──────────────────────────────────────────────── */}
       <section
         className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8"
-        style={{ borderTop: '1px solid #1e1e2e' }}
+        style={{ borderTop: `1px solid ${colors.border}` }}
       >
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+        <div className="max-w-2xl mx-auto text-center reveal">
+          <h2
+            className="text-2xl sm:text-3xl font-bold mb-4"
+            style={{ color: colors.text }}
+          >
             See it in action
           </h2>
-          <p className="text-sm sm:text-base mb-8" style={{ color: '#94a3b8' }}>
+          <p
+            className="text-sm sm:text-base mb-8"
+            style={{ color: colors.textSub }}
+          >
             Upload your own image or video and watch the pipeline run in real time.
           </p>
           <Link
@@ -280,8 +307,8 @@ export default function HowItWorks() {
 
       {/* ── Footer ───────────────────────────────────────────── */}
       <footer
-        className="py-6 sm:py-8 px-4 text-center text-xs sm:text-sm"
-        style={{ borderTop: '1px solid #1e1e2e', color: '#334155' }}
+        className="py-6 sm:py-8 px-4 text-center text-xs sm:text-sm reveal"
+        style={{ borderTop: `1px solid ${colors.border}`, color: colors.textFaint }}
       >
         OrVex — Final Year Project | B.Tech CSE 2026 | Amrapali University
       </footer>

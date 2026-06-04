@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { checkHealth } from '../../services/api'
+import { useTheme } from '../../context/ThemeContext'
 
 export default function StatusBadge() {
   const [status, setStatus] = useState('checking')
   const [device, setDevice] = useState('')
+  const { colors } = useTheme()
 
   useEffect(() => {
     checkHealth()
@@ -23,7 +25,10 @@ export default function StatusBadge() {
   return (
     <div
       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono"
-      style={{ backgroundColor: '#12121a', border: '1px solid #1e1e2e' }}
+      style={{
+        backgroundColor: colors.surface,
+        border: `1px solid ${colors.border}`,
+      }}
     >
       <span
         style={{

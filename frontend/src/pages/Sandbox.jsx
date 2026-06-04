@@ -1,18 +1,51 @@
 import { useState } from 'react'
 import { RotateCcw, Image, Video } from 'lucide-react'
 import { useAnalyze } from '../hooks/useAnalyze'
+import { useTheme } from '../context/ThemeContext'
 import StatusBadge from '../components/common/StatusBadge'
 import UploadZone from '../components/sandbox/UploadZone'
-import FilePreview from '../components/sandbox/FilePreview'
 import AnalyzeButton from '../components/sandbox/AnalyzeButton'
-import VerdictCard from '../components/sandbox/VerdictCard'
-import ConfidenceBar from '../components/sandbox/ConfidenceBar'
-import HeatmapView from '../components/sandbox/HeatmapView'
 import FrameGraph from '../components/sandbox/FrameGraph'
 import VideoMetadata from '../components/sandbox/VideoMetadata'
 import ProcessingLogs from '../components/logs/ProcessingLogs'
+import ScanOverlay from '../components/sandbox/ScanOverlay'
+import ConfidenceGauge from '../components/sandbox/ConfidenceGauge'
+import SplitReveal from '../components/sandbox/SplitReveal'
+
+function VerdictBanner({ label }) {
+  const isFake = label === 'FAKE'
+  return (
+    <div
+      className="rounded-2xl flex items-center justify-center gap-4 py-6 px-8"
+      style={{
+        background: isFake
+          ? 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05))'
+          : 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05))',
+        border: `2px solid ${isFake ? 'rgba(239,68,68,0.4)' : 'rgba(34,197,94,0.4)'}`,
+        boxShadow: isFake
+          ? '0 0 40px rgba(239,68,68,0.12)'
+          : '0 0 40px rgba(34,197,94,0.12)',
+        animation: 'verdictIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both',
+      }}
+    >
+      <span style={{ fontSize: 40 }}>{isFake ? '🚨' : '✅'}</span>
+      <div>
+        <div
+          className="text-4xl font-black tracking-widest font-mono"
+          style={{ color: isFake ? '#ef4444' : '#22c55e' }}
+        >
+          {label}
+        </div>
+        <div className="text-xs font-mono mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          {isFake ? 'AI-generated content detected' : 'Authentic content verified'}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function AnalysisPanel({ accept, label }) {
+  const { colors } = useTheme()
   const {
     file, preview, fileType,
     loading, logs, result, error,
@@ -20,100 +53,137 @@ function AnalysisPanel({ accept, label }) {
   } = useAnalyze()
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
+      <style>{`
+        @keyframes verdictIn {
+          from { opacity: 0; transform: scale(0.85); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+      `}</style>
+
       {!file ? (
         <UploadZone onFile={handleFile} disabled={loading} accept={accept} />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <>
+          {/* Row 1: Scan preview + Logs */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-4">
+              <ScanOverlay imageUrl={preview} fileType={fileType} scanning={loading} />
+              <AnalyzeButton onClick={analyze} loading={loading} disabled={!file || loading} />
+              {error && (
+                <div
+                  className="rounded-xl p-4 text-sm"
+                  style={{
+                    backgroundColor: 'rgba(239,68,68,0.08)',
+                    border: '1px solid rgba(239,68,68,0.3)',
+                    color: '#ef4444',
+                  }}
+                >
+                  {error}
+                </div>
+              )}
+            </div>
 
-          {/* Left — file preview + analyze */}
-          <div className="flex flex-col gap-4">
-            <FilePreview
-              file={file}
-              preview={preview}
-              fileType={fileType}
-              onReset={reset}
-            />
-            <AnalyzeButton
-              onClick={analyze}
-              loading={loading}
-              disabled={!file || loading}
-            />
-            <ProcessingLogs logs={logs} loading={loading} />
-
-            {error && (
+            <div
+              className="rounded-2xl overflow-hidden flex flex-col"
+              style={{
+                backgroundColor: colors.surface,
+                border: `1px solid ${colors.border}`,
+                minHeight: 300,
+              }}
+            >
               <div
-                className="rounded-xl p-4 text-sm"
-                style={{
-                  backgroundColor: 'rgba(239,68,68,0.08)',
-                  border: '1px solid rgba(239,68,68,0.3)',
-                  color: '#ef4444',
-                }}
+                className="px-4 py-3 text-xs font-mono font-semibold tracking-widest uppercase flex items-center gap-2"
+                style={{ borderBottom: `1px solid ${colors.border}`, color: colors.textMuted }}
               >
-                {error}
+                <span
+                  style={{
+                    width: 7, height: 7, borderRadius: '50%',
+                    backgroundColor: loading ? '#6366f1' : colors.border,
+                    boxShadow: loading ? '0 0 6px #6366f1' : 'none',
+                    display: 'inline-block',
+                    animation: loading ? 'pulse 1.5s infinite' : 'none',
+                  }}
+                />
+                Processing Logs
               </div>
-            )}
+              <div className="p-4 flex-1 overflow-auto">
+                <ProcessingLogs logs={logs} loading={loading} />
+              </div>
+            </div>
           </div>
 
-          {/* Right — results */}
-          <div className="flex flex-col gap-4">
-            {result ? (
-              <>
-                <VerdictCard
+          {/* Row 2: Results */}
+          {result && (
+            <div className="flex flex-col gap-5">
+              <VerdictBanner label={result.label} />
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <ConfidenceGauge
                   label={result.label}
                   confidence={result.confidence}
-                />
-                <ConfidenceBar
                   fakeProb={result.fake_prob}
                   realProb={result.real_prob}
                 />
-                {result.gradcam && (
-                  <HeatmapView
-                    original={preview}
-                    gradcam={result.gradcam}
-                    fileType={result.type}
+                {result.gradcam ? (
+                  <SplitReveal original={preview} gradcam={result.gradcam} />
+                ) : (
+                  <div
+                    className="rounded-2xl flex items-center justify-center text-sm"
+                    style={{
+                      backgroundColor: colors.surface,
+                      border: `1px dashed ${colors.border}`,
+                      color: colors.textFaint,
+                      minHeight: 200,
+                    }}
+                  >
+                    No heatmap available
+                  </div>
+                )}
+              </div>
+
+              {result.type === 'video' && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <FrameGraph frameResults={result.frame_results} />
+                  <VideoMetadata
+                    metadata={result.metadata}
+                    framesAnalysed={result.frames_analysed}
+                    totalFrames={result.total_frames}
                   />
-                )}
-                {result.type === 'video' && (
-                  <>
-                    <FrameGraph frameResults={result.frame_results} />
-                    <VideoMetadata
-                      metadata={result.metadata}
-                      framesAnalysed={result.frames_analysed}
-                      totalFrames={result.total_frames}
-                    />
-                  </>
-                )}
-                <button
-                  onClick={reset}
-                  className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all hover:scale-105"
-                  style={{
-                    backgroundColor: '#12121a',
-                    border: '1px solid #1e1e2e',
-                    color: '#94a3b8',
-                  }}
-                >
-                  <RotateCcw size={16} />
-                  Analyze Another {label}
-                </button>
-              </>
-            ) : (
-              <div
-                className="rounded-2xl flex flex-col items-center justify-center text-center p-12"
+                </div>
+              )}
+
+              <button
+                onClick={reset}
+                className="flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium transition-all hover:scale-105"
                 style={{
-                  backgroundColor: '#12121a',
-                  border: '1px dashed #1e1e2e',
-                  minHeight: 300,
+                  backgroundColor: colors.surface,
+                  border: `1px solid ${colors.border}`,
+                  color: colors.textSub,
                 }}
               >
-                <div className="text-5xl mb-4" style={{ color: '#1e1e2e' }}>⚡</div>
-                <p className="text-sm" style={{ color: '#334155' }}>
-                  Click Analyse Now to run detection
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+                <RotateCcw size={16} />
+                Analyze Another {label}
+              </button>
+            </div>
+          )}
+
+          {!result && !loading && (
+            <div
+              className="rounded-2xl flex flex-col items-center justify-center text-center p-10"
+              style={{
+                backgroundColor: colors.surface,
+                border: `1px dashed ${colors.border}`,
+                minHeight: 140,
+              }}
+            >
+              <div className="text-4xl mb-3" style={{ color: colors.border }}>⚡</div>
+              <p className="text-sm" style={{ color: colors.textFaint }}>
+                Click Analyse Now to run detection
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   )
@@ -121,6 +191,7 @@ function AnalysisPanel({ accept, label }) {
 
 export default function Sandbox() {
   const [activeTab, setActiveTab] = useState('image')
+  const { colors } = useTheme()
 
   const tabs = [
     { id: 'image', label: 'Image Detection', icon: <Image size={16} /> },
@@ -129,8 +200,6 @@ export default function Sandbox() {
 
   return (
     <div className="pt-16 w-full min-h-screen">
-
-      {/* ── Header ───────────────────────────────────────────── */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none"
@@ -142,22 +211,21 @@ export default function Sandbox() {
           <div className="flex justify-center mb-4">
             <StatusBadge />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-3">
+          <h1 className="text-3xl sm:text-4xl font-extrabold mb-3" style={{ color: colors.text }}>
             Face Analysis Sandbox
           </h1>
-          <p className="text-sm sm:text-base" style={{ color: '#94a3b8' }}>
+          <p className="text-sm sm:text-base" style={{ color: colors.textSub }}>
             Upload an image or video to detect deepfakes using AI.
             Results include confidence score and Grad-CAM heatmap.
           </p>
         </div>
       </section>
 
-      {/* ── Tabs ─────────────────────────────────────────────── */}
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div
             className="flex gap-2 p-1 rounded-xl w-fit mb-8"
-            style={{ backgroundColor: '#12121a', border: '1px solid #1e1e2e' }}
+            style={{ backgroundColor: colors.surface, border: `1px solid ${colors.border}` }}
           >
             {tabs.map(tab => (
               <button
@@ -166,7 +234,7 @@ export default function Sandbox() {
                 className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-200"
                 style={{
                   backgroundColor: activeTab === tab.id ? '#6366f1' : 'transparent',
-                  color: activeTab === tab.id ? 'white' : '#64748b',
+                  color: activeTab === tab.id ? 'white' : colors.textMuted,
                 }}
               >
                 {tab.icon}
@@ -177,29 +245,19 @@ export default function Sandbox() {
         </div>
       </div>
 
-      {/* ── Panels ───────────────────────────────────────────── */}
       <section className="px-4 sm:px-6 lg:px-8 pb-20">
         <div className="max-w-5xl mx-auto">
           {activeTab === 'image' ? (
-            <AnalysisPanel
-              key="image"
-              accept="image/jpeg,image/png,image/webp"
-              label="Image"
-            />
+            <AnalysisPanel key="image" accept="image/jpeg,image/png,image/webp" label="Image" />
           ) : (
-            <AnalysisPanel
-              key="video"
-              accept="video/mp4,video/quicktime,video/x-msvideo,video/webm"
-              label="Video"
-            />
+            <AnalysisPanel key="video" accept="video/mp4,video/quicktime,video/x-msvideo,video/webm" label="Video" />
           )}
         </div>
       </section>
 
-      {/* ── Footer ───────────────────────────────────────────── */}
       <footer
         className="py-6 px-4 text-center text-xs sm:text-sm"
-        style={{ borderTop: '1px solid #1e1e2e', color: '#334155' }}
+        style={{ borderTop: `1px solid ${colors.border}`, color: colors.textFaint }}
       >
         OrVex — Final Year Project | B.Tech CSE 2026 | Amrapali University
       </footer>
