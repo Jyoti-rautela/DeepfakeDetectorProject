@@ -6,7 +6,7 @@ export default function ConfidenceGauge({ label, confidence, fakeProb, realProb 
   const currentRef = useRef(0)
   const [, setDisplayed] = useState(0)
 
-  const isFake   = label === 'FAKE'
+  const isFake = label?.toLowerCase() === 'fake'
   const target   = confidence  // 0–100
   const arcColor = isFake ? '#ef4444' : '#22c55e'
   const glowColor= isFake ? 'rgba(239,68,68,0.5)' : 'rgba(34,197,94,0.5)'

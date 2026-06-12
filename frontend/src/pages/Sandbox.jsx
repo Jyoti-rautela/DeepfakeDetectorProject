@@ -13,7 +13,8 @@ import ConfidenceGauge from '../components/sandbox/ConfidenceGauge'
 import SplitReveal from '../components/sandbox/SplitReveal'
 
 function VerdictBanner({ label }) {
-  const isFake = label === 'FAKE'
+  const isFake = label?.toLowerCase() === 'fake'
+
   return (
     <div
       className="rounded-2xl flex items-center justify-center gap-4 py-6 px-8"
@@ -23,8 +24,8 @@ function VerdictBanner({ label }) {
           : 'linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05))',
         border: `2px solid ${isFake ? 'rgba(239,68,68,0.4)' : 'rgba(34,197,94,0.4)'}`,
         boxShadow: isFake
-          ? '0 0 40px rgba(239,68,68,0.12)'
-          : '0 0 40px rgba(34,197,94,0.12)',
+          ? '0 0 40px rgba(239,68,68,0.2)'
+          : '0 0 40px rgba(34,197,94,0.2)',
         animation: 'verdictIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both',
       }}
     >
@@ -34,10 +35,13 @@ function VerdictBanner({ label }) {
           className="text-4xl font-black tracking-widest font-mono"
           style={{ color: isFake ? '#ef4444' : '#22c55e' }}
         >
-          {label}
+          {isFake ? 'FAKE' : 'REAL'}
         </div>
-        <div className="text-xs font-mono mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          {isFake ? 'AI-generated content detected' : 'Authentic content verified'}
+        <div
+          className="text-xs font-mono mt-1"
+          style={{ color: isFake ? 'rgba(239,68,68,0.6)' : 'rgba(34,197,94,0.6)' }}
+        >
+          {isFake ? '⚠️ AI-generated content detected' : '✓ Authentic content verified'}
         </div>
       </div>
     </div>

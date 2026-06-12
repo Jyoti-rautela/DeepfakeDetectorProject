@@ -3,7 +3,7 @@ import { useTheme } from '../../context/ThemeContext'
 
 export default function VerdictCard({ label, confidence }) {
   const { colors } = useTheme()
-  const isFake = label === 'fake'
+  const isFake = label?.toLowerCase() === 'fake'
 
   return (
     <div

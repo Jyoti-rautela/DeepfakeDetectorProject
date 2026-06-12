@@ -6,11 +6,11 @@ import Spinner3D from '../components/home/Spinner3D'
 import { useReveal } from '../hooks/useReveal'
 
 const stats = [
-  { label: 'Test Accuracy', value: '91.61%', sub: 'on 20,000 images'       },
+  { label: 'Test Accuracy', value: '85.61%', sub: 'on 20,000 images'       },
   { label: 'Precision',     value: '94.15%', sub: 'low false alarm rate'    },
   { label: 'Recall',        value: '88.73%', sub: 'deepfakes caught'        },
   { label: 'F1 Score',      value: '91.36%', sub: 'balanced metric'         },
-  { label: 'Fine-tuned',    value: '97.98%', sub: 'after FaceForensics++'   },
+  { label: 'Fine-tuned',    value: '92.98%', sub: 'after FaceForensics++'   },
   { label: 'Training Data', value: '140k',   sub: 'real & fake face images' },
 ]
 
@@ -94,7 +94,7 @@ export default function Home() {
                 OrVex uses a fine-tuned{' '}
                 <span style={{ color: '#a78bfa' }}>EfficientNet-B3</span> deep
                 learning model to detect AI-generated deepfake images and videos
-                with <span style={{ color: '#a78bfa' }}>97.98% accuracy</span>.
+                with <span style={{ color: '#a78bfa' }}>92.98% accuracy</span>.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
