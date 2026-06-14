@@ -11,6 +11,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from models.efficientnet_model import DeepfakeDetector
+from utils.predict import crop_face
 
 # ── Constants ────────────────────────────────────────────────────────────────
 MEAN     = [0.485, 0.456, 0.406]
@@ -29,6 +30,7 @@ def generate_gradcam(image_path: str, model: DeepfakeDetector,
                      device: torch.device, target_class: int = None) -> np.ndarray:
     """
     Generate Grad-CAM heatmap for an image.
+    Crops to the detected face first, for consistency with prediction.
 
     Args:
         image_path   : path to image file
@@ -39,14 +41,17 @@ def generate_gradcam(image_path: str, model: DeepfakeDetector,
     Returns:
         np.ndarray: RGB image with heatmap overlay (300x300x3)
     """
-    # Load original image for overlay
-    image     = Image.open(image_path).convert('RGB')
-    image     = image.resize((IMG_SIZE, IMG_SIZE))
-    image_np  = np.array(image, dtype=np.float32) / 255.0  # normalize to 0-1
+    # Load and crop to face region
+    raw_image = Image.open(image_path).convert('RGB')
+    face_image, _ = crop_face(raw_image)
 
-    # Prepare tensor
-    tensor = transform(Image.open(image_path).convert('RGB'))
-    tensor = tensor.unsqueeze(0).to(device)                 # [1, 3, 300, 300]
+    # Prepare image for overlay (resized, 0-1 range, NOT normalized)
+    display_image = face_image.resize((IMG_SIZE, IMG_SIZE))
+    image_np = np.array(display_image, dtype=np.float32) / 255.0
+
+    # Prepare tensor for model (normalized)
+    tensor = transform(face_image)
+    tensor = tensor.unsqueeze(0).to(device)  # [1, 3, 300, 300]
 
     # Target layer — last conv block of EfficientNet-B3
     target_layer = [model.backbone.features[-1]]
@@ -62,12 +67,12 @@ def generate_gradcam(image_path: str, model: DeepfakeDetector,
     # Generate Grad-CAM
     with GradCAM(model=model, target_layers=target_layer) as cam:
         grayscale_cam = cam(input_tensor=tensor, targets=targets)
-        grayscale_cam = grayscale_cam[0]                    # [300, 300]
+        grayscale_cam = grayscale_cam[0]  # [300, 300]
 
     # Overlay heatmap on original image
     cam_image = show_cam_on_image(image_np, grayscale_cam, use_rgb=True)
 
-    return cam_image                                        # np.ndarray [300, 300, 3]
+    return cam_image  # np.ndarray [300, 300, 3]
 
 
 # ── Save Grad-CAM to file ─────────────────────────────────────────────────────

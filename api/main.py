@@ -29,10 +29,10 @@ app.add_middleware(
 )
 
 # ── Device & Model ────────────────────────────────────────────────────────────
-DEVICE      = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-WEIGHTS     = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                           'saved_models', 'best_model.pth')
-model       = load_model(WEIGHTS, DEVICE)
+DEVICE  = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+WEIGHTS = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                       'saved_models', 'best_model.pth')
+model   = load_model(WEIGHTS, DEVICE)
 
 # ── Temp folder for uploads ───────────────────────────────────────────────────
 TEMP_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'temp')
@@ -58,35 +58,31 @@ def health():
 # ── Image Prediction ──────────────────────────────────────────────────────────
 @app.post('/api/predict/image')
 async def predict_image_endpoint(file: UploadFile = File(...)):
-    # Validate file type
     if file.content_type not in IMAGE_TYPES:
         raise HTTPException(status_code=400,
-                            detail=f'Invalid file type. Accepted: jpeg, png, webp')
+                            detail='Invalid file type. Accepted: jpeg, png, webp')
 
-    # Save uploaded file to temp folder
     temp_path = os.path.join(TEMP_DIR, f'{uuid.uuid4()}.jpg')
     try:
         with open(temp_path, 'wb') as f:
             shutil.copyfileobj(file.file, f)
 
-        # Predict
         result = predict_image(temp_path, model, DEVICE)
 
-        # Generate Grad-CAM
         cam_array  = generate_gradcam(temp_path, model, DEVICE)
         cam_base64 = array_to_base64(cam_array)
 
         return JSONResponse({
-            'label'      : result['label'],
-            'confidence' : result['confidence'],
-            'fake_prob'  : result['fake_prob'],
-            'real_prob'  : result['real_prob'],
-            'gradcam'    : cam_base64,
-            'type'       : 'image'
+            'label'         : result['label'],
+            'confidence'    : result['confidence'],
+            'fake_prob'     : result['fake_prob'],
+            'real_prob'     : result['real_prob'],
+            'face_detected' : result.get('face_detected', False),
+            'gradcam'       : cam_base64,
+            'type'          : 'image'
         })
 
     finally:
-        # Always clean up temp file
         if os.path.exists(temp_path):
             os.remove(temp_path)
 
@@ -94,12 +90,10 @@ async def predict_image_endpoint(file: UploadFile = File(...)):
 # ── Video Prediction ──────────────────────────────────────────────────────────
 @app.post('/api/predict/video')
 async def predict_video_endpoint(file: UploadFile = File(...)):
-    # Validate file type
     if file.content_type not in VIDEO_TYPES:
         raise HTTPException(status_code=400,
-                            detail=f'Invalid file type. Accepted: mp4, mov, avi, webm')
+                            detail='Invalid file type. Accepted: mp4, mov, avi, webm')
 
-    # Save uploaded file to temp folder
     temp_video = os.path.join(TEMP_DIR, f'{uuid.uuid4()}.mp4')
     temp_frame = os.path.join(TEMP_DIR, f'{uuid.uuid4()}.jpg')
 
@@ -107,13 +101,9 @@ async def predict_video_endpoint(file: UploadFile = File(...)):
         with open(temp_video, 'wb') as f:
             shutil.copyfileobj(file.file, f)
 
-        # Get video metadata
         metadata = get_video_metadata(temp_video)
+        result   = predict_video(temp_video, model, DEVICE)
 
-        # Predict
-        result = predict_video(temp_video, model, DEVICE)
-
-        # Get most fake frame and generate Grad-CAM on it
         save_most_fake_frame(temp_video, model, DEVICE, temp_frame)
         cam_array  = generate_gradcam(temp_frame, model, DEVICE)
         cam_base64 = array_to_base64(cam_array)
@@ -132,7 +122,6 @@ async def predict_video_endpoint(file: UploadFile = File(...)):
         })
 
     finally:
-        # Always clean up temp files
         if os.path.exists(temp_video):
             os.remove(temp_video)
         if os.path.exists(temp_frame):

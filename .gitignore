@@ -6,3 +6,4 @@ __pycache__/
 project/*.pdf
 .ipynb_checkpoints/
 frontend/node_modules/
+saved_models/best_model.pth

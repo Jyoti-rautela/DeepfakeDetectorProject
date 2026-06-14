@@ -33,7 +33,7 @@ const steps = [
     number: '03',
     icon: <Brain size={28} />,
     title: 'EfficientNet-B3 Inference',
-    desc: 'The preprocessed image is passed through EfficientNet-B3 — a deep CNN backbone pretrained on ImageNet, fine-tuned on 140k real and fake faces plus FaceForensics++.',
+    desc: 'The preprocessed image is passed through EfficientNet-B3 — a deep CNN backbone pretrained on ImageNet, fine-tuned on 140k real and fake faces.',
     details: [
       'Backbone extracts 1536 deep facial features',
       'Custom classifier head: 1536 → 512 → 2',
@@ -76,18 +76,18 @@ const steps = [
 ]
 
 const modelInfo = [
-  { label: 'Architecture',   value: 'EfficientNet-B3'       },
-  { label: 'Input Size',     value: '300 × 300 × 3'         },
-  { label: 'Parameters',     value: '~12 Million'            },
-  { label: 'Training Data',  value: '140k Real & Fake Faces' },
-  { label: 'Fine-tuned On',  value: 'FaceForensics++'        },
-  { label: 'Test Accuracy',  value: '85.61%'                 },
-  { label: 'Fine-tune Acc.', value: '92.98%'                 },
-  { label: 'Loss Function',  value: 'CrossEntropyLoss'       },
-  { label: 'Optimizer',      value: 'Adam (lr=1e-3)'         },
-  { label: 'Epochs',         value: '10 + fine-tuning'       },
-  { label: 'Batch Size',     value: '32'                     },
-  { label: 'GPU',            value: 'Kaggle T4 (training)'   },
+  { label: 'Architecture',  value: 'EfficientNet-B3'          },
+  { label: 'Input Size',    value: '300 × 300 × 3'            },
+  { label: 'Parameters',    value: '~12 Million'               },
+  { label: 'Training Data', value: '140k Real & Fake Faces'    },
+  { label: 'Val Accuracy',  value: '89.42%'                    },
+  { label: 'Test Accuracy', value: '85.61%'                    },
+  { label: 'Loss Function', value: 'CrossEntropyLoss'          },
+  { label: 'Optimizer',     value: 'Adam (lr=1e-3 → 1e-6)'    },
+  { label: 'Epochs',        value: '19 (early stopping)'       },
+  { label: 'Batch Size',    value: '32'                        },
+  { label: 'Augmentation',  value: 'Flip, Blur, Jitter, Crop' },
+  { label: 'GPU',           value: 'Kaggle T4 (training)'      },
 ]
 
 export default function HowItWorks() {

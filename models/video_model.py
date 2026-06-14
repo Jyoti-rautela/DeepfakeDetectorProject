@@ -8,6 +8,7 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from models.efficientnet_model import DeepfakeDetector
+from utils.predict import crop_face
 
 # ── Constants ────────────────────────────────────────────────────────────────
 MEAN     = [0.485, 0.456, 0.406]
@@ -25,6 +26,19 @@ transform = transforms.Compose([
 def get_most_fake_frame(video_path: str, model: DeepfakeDetector,
                         device: torch.device,
                         frame_interval: int = 10) -> tuple:
+    """
+    Extract the single most fake frame (cropped to face) from a video.
+    Used to generate Grad-CAM heatmap for video predictions.
+
+    Args:
+        video_path     : path to video file
+        model          : loaded DeepfakeDetector model
+        device         : torch device (cuda/cpu)
+        frame_interval : analyse every Nth frame
+
+    Returns:
+        tuple: (PIL Image of most fake frame - cropped to face, fake_probability)
+    """
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         raise ValueError(f'Cannot open video: {video_path}')
@@ -41,7 +55,11 @@ def get_most_fake_frame(video_path: str, model: DeepfakeDetector,
         if frame_count % frame_interval == 0:
             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             image     = Image.fromarray(frame_rgb)
-            tensor    = transform(image).unsqueeze(0).to(device)
+
+            # Crop to face region before prediction
+            face_image, _ = crop_face(image)
+
+            tensor = transform(face_image).unsqueeze(0).to(device)
 
             with torch.no_grad():
                 outputs   = model(tensor)
@@ -50,7 +68,7 @@ def get_most_fake_frame(video_path: str, model: DeepfakeDetector,
 
             if fake_prob > best_fake_prob:
                 best_fake_prob = fake_prob
-                best_frame     = image
+                best_frame     = face_image  # cropped face, used for Grad-CAM later
 
         frame_count += 1
 
@@ -66,6 +84,20 @@ def get_most_fake_frame(video_path: str, model: DeepfakeDetector,
 def save_most_fake_frame(video_path: str, model: DeepfakeDetector,
                          device: torch.device, save_path: str,
                          frame_interval: int = 10) -> str:
+    """
+    Extract most fake frame (cropped to face) and save it to disk.
+    Used as input to Grad-CAM for video analysis.
+
+    Args:
+        video_path     : path to video file
+        model          : loaded DeepfakeDetector model
+        device         : torch device
+        save_path      : path to save the frame image
+        frame_interval : analyse every Nth frame
+
+    Returns:
+        str: path where frame was saved
+    """
     frame, fake_prob = get_most_fake_frame(video_path, model, device, frame_interval)
     frame.save(save_path)
     return save_path
@@ -73,6 +105,15 @@ def save_most_fake_frame(video_path: str, model: DeepfakeDetector,
 
 # ── Get Video Metadata ────────────────────────────────────────────────────────
 def get_video_metadata(video_path: str) -> dict:
+    """
+    Get basic metadata about a video file.
+
+    Args:
+        video_path : path to video file
+
+    Returns:
+        dict with fps, total_frames, duration_seconds, resolution
+    """
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         raise ValueError(f'Cannot open video: {video_path}')
