@@ -10,7 +10,7 @@ const stats = [
   { label: 'Precision',     value: '94.15%', sub: 'low false alarm rate'    },
   { label: 'Recall',        value: '88.73%', sub: 'deepfakes caught'        },
   { label: 'F1 Score',      value: '91.36%', sub: 'balanced metric'         },
-  { label: 'Fine-tuned',    value: '90.37%', sub: 'best val accuracy'       },
+  // { label: 'Fine-tuned',    value: '90.37%', sub: 'best val accuracy'       },
   { label: 'Training Data', value: '140k',   sub: 'real & fake face images' },
 ]
 
@@ -91,7 +91,7 @@ export default function Home() {
                 className="text-base sm:text-lg max-w-xl mx-auto lg:mx-0 mb-8 sm:mb-10 leading-relaxed"
                 style={{ color: colors.textSub }}
               >
-                OrVex uses a fine-tuned{' '}
+                OrVex uses a trained{' '}
                 <span style={{ color: '#a78bfa' }}>EfficientNet-B3</span> deep
                 learning model to detect AI-generated deepfake images and videos
                 with <span style={{ color: '#a78bfa' }}>89.42% accuracy</span>.
@@ -158,7 +158,7 @@ export default function Home() {
           </div>
 
           {/* Stat cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 max-w-4xl mx-auto">
             {stats.map((stat, i) => (
               <div
                 key={i}
@@ -221,7 +221,7 @@ export default function Home() {
               What Makes OrVex Different
             </h2>
             <p className="text-sm sm:text-base" style={{ color: colors.textMuted }}>
-              Built as a Final Year Project at Amrapali University, B.Tech CSE 2026
+              Built as a Final Year Project at Amrapali Institute, B.Tech CSE 2026
             </p>
           </div>
 
@@ -329,7 +329,7 @@ export default function Home() {
         className="py-6 sm:py-8 px-4 text-center text-xs sm:text-sm reveal"
         style={{ borderTop: `1px solid ${colors.border}`, color: colors.textFaint }}
       >
-        OrVex — Final Year Project | B.Tech CSE 2026 | Amrapali University
+        OrVex — Final Year Project | B.Tech CSE 2026 | Amrapali Institute | Developed by{' BugZ'}
       </footer>
 
     </div>

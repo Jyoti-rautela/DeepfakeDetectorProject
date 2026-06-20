@@ -13,8 +13,8 @@ const steps = [
     title: 'Upload Media',
     desc: 'Upload any image (JPEG, PNG, WebP) or video (MP4, MOV, AVI, WebM) through the Face Analysis Sandbox. Files are processed locally — nothing is stored permanently.',
     details: [
-      'Supports images up to 50MB',
-      'Supports videos up to 50MB',
+      'Supports images up to 10MB',
+      'Supports videos up to 200MB',
       'File is saved temporarily and deleted after analysis',
     ],
   },
@@ -310,7 +310,7 @@ export default function HowItWorks() {
         className="py-6 sm:py-8 px-4 text-center text-xs sm:text-sm reveal"
         style={{ borderTop: `1px solid ${colors.border}`, color: colors.textFaint }}
       >
-        OrVex — Final Year Project | B.Tech CSE 2026 | Amrapali University
+        OrVex — Final Year Project | B.Tech CSE 2026 | Amrapali Institute | Developed by{' BugZ'}
       </footer>
     </div>
   )

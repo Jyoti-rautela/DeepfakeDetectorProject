@@ -374,7 +374,7 @@ export default function TrustQuiz() {
         className="py-6 px-4 text-center text-xs sm:text-sm"
         style={{ borderTop: `1px solid ${colors.border}`, color: colors.textFaint }}
       >
-        OrVex — Final Year Project | B.Tech CSE 2026 | Amrapali University
+        OrVex — Final Year Project | B.Tech CSE 2026 | Amrapali Institute | Developed by{' BugZ'}
       </footer>
     </div>
   )
